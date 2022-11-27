@@ -1,4 +1,4 @@
-# timestamp (sec),tracking,propagation,msckf update,slam update,slam delayed,re-tri & marg,total
+timestamp (sec),tracking,propagation,msckf update,slam update,slam delayed,re-tri & marg,total
 1403715278.861914873123169,0.00376,0.00019,0.00066,0.00000,0.00000,0.00072,0.00534
 1403715278.911309242248535,0.00311,0.00011,0.00282,0.00000,0.00686,0.00024,0.01314
 1403715278.961056470870972,0.00310,0.00023,0.00040,0.00264,0.00000,0.00026,0.00663
