@@ -9,6 +9,9 @@ from scripts import *
 # for tools.py functions
 from scipy.interpolate import interp1d
 from math import sqrt
+from read import *
+import matplotlib.pyplot as plt
+from tools import *
 
 def find_timebounds(arr,index):
     h, b = arr.shape
@@ -77,10 +80,10 @@ def find_rotational_error(ref_np,np_table):
     print(q2.w, q2.x, q2.y, q2.z)
     # print(np_table[0,5])
 
-def pose_error():
+def pose_error(file):
     # finding out the files/folders in the current directory
     for directory in os.listdir(os.getcwd()): 
-        ref_file = "V1_01_easy.txt"
+        ref_file = file
         ref_df = pd.read_csv(ref_file, delimiter=' ')
         ref_np = ref_df.to_numpy()
         if ('hz' in directory):
@@ -101,6 +104,40 @@ def rms(a, b):
     std = np.std(tmp)
     
     return mean, std
+
+def ate(gt_file,euroc_file):
+    gt = read_3d(gt_file)
+    euroc_3d = read_3d(euroc_file)
+
+    gt, euroc_3d, euroc_3d_rms = analyze(gt, euroc_3d)
+
+    euroc_3d, s = scale(gt, euroc_3d)
+    # slam2 = slam2 / s
+
+    # slam2_mean, slam2_std = rms(gt[:,1:], slam2[:,1:])
+    euroc_3d_mean, euroc_3d_std = rms(gt[:,1:], euroc_3d[:,1:])  
+    euroc_rms_error = [ [euroc_3d_rms] ]
+
+    euroc_rms_error = np.asarray(euroc_rms_error, dtype=np.float64)
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.yaxis.grid(True)
+
+    error_config = {'ecolor': 'r', 'capsize': 5, 'elinewidth': 3}
+
+    opacity = 0.6
+    ax.set_ylabel('Mean absolute trajectory error')
+    #ax.set_title('Mean Absolute Trajectory Error for ORB-SLAM2 and Edge-SLAM')
+
+    line = plt.bar([0], [euroc_3d_mean], 1, alpha=opacity, yerr=(euroc_3d_std), error_kw=error_config, color='b')
+
+    ax.set_xlabel('SLAM System')
+    # plt.xticks([0], ('OPEN_VINS'))
+    fig.tight_layout()
+
+    return euroc_rms_error, plt
+
 
 ######################## DRONESLAB FUNCTIONS ########################
 
